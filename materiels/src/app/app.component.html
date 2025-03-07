@@ -1,5 +1,5 @@
 <div class="container">
-  <h1>Gestion des Matériels</h1>
+  <h1>{{ title }}</h1>
 
   <form [formGroup]="materielForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
@@ -23,23 +23,17 @@
     </div>
 
     <div class="button-group">
-      <button type="submit" class="btn-success">Ajouter</button>
-      <button type="button" class="btn-info" (click)="resetForm()">Annuler</button>
-    </div>
-
-    <div class="button-group">
-      <button type="button" class="btn-primary" (click)="onCreate()">Créer</button>
-      <button type="button" class="btn-warning" *ngIf="materiels.length" (click)="onEdit(materiels[0])">
-        Modifier
-      </button>
-      <button type="button" class="btn-secondary" *ngIf="materiels.length">Lire</button>
-      <button type="button" class="btn-danger" *ngIf="materiels.length" (click)="onDelete(materiels[0].id)">
-        Supprimer
-      </button>
+      <button type="submit">Ajouter</button>
+      <button type="button" (click)="resetForm()">Annuler</button>
+      <button type="button"  (click)="onCreate()">Créer</button>
+      <button type="button"  *ngIf="materiels.length"
+        (click)="onEdit(materiels[0])">Modifier</button>
+      <button type="button"  *ngIf="materiels.length"
+        (click)="onDelete(materiels[0].id)">Supprimer</button>
     </div>
   </form>
 
-  <table>
+  <table class="table table-striped">
     <thead>
       <tr>
         <th>ID</th>

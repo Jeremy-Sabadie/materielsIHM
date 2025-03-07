@@ -1,23 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+
 .container {
   max-width: 900px;
   margin: auto;
   padding: 20px;
-  background: #f4f4f4;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  font-family: 'Arial', sans-serif;
   margin-top: 50px;
 }
 
 h1 {
   text-align: center;
   color: #007bff;
+  margin-bottom: 20px;
 }
 
 form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
   padding: 20px;
   background: #ffffff;
   border: 1px solid #ccc;
@@ -27,32 +36,42 @@ form {
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
 }
 
 label {
-  font-weight: bold;
+  font-weight: 500;
+  margin-bottom: 5px;
 }
 
 input {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 16px;
 }
 
 .button-group {
+  grid-column: span 2;
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
 }
 
 button {
   padding: 10px 20px;
   border: none;
-  border-radius: 20px;
+  border-radius: 5px;
   cursor: pointer;
-  color: white;
-  font-weight: bold;
-  text-transform: uppercase;
+  color: black;
+  background-color: #d3d3d3;
+  /* Gris clair */
+  font-weight: 500;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
 }
 
 .btn-success {
@@ -75,18 +94,26 @@ table {
   width: 100%;
   margin-top: 20px;
   border-collapse: collapse;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 th,
 td {
   padding: 12px;
   text-align: center;
-  border-bottom: 1px solid #ddd;
+  border: 1px solid #ddd;
+  /* Ajoute une bordure aux colonnes */
 }
 
 th {
-  background: #007bff;
-  color: white;
+  background: #ddd;
+  color: black;
+  font-weight: 500;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+  height: auto;
 }
 
 tr:hover {
