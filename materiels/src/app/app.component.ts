@@ -31,11 +31,17 @@ export class AppComponent implements OnInit {
   currentMaterielId: number | null = null;
 
   // Déclaration de la variable displayedColumns
-  displayedColumns: string[] = ['id', 'nom', 'description', 'actions']; // Colonne pour l'ID, le nom, la description et les actions (modifier/supprimer)
+  displayedColumns: string[] = [
+    'id',
+    'nom',
+    'description',
+    'serviceDat',
+    'endGarantee',
+  ];
 
   constructor(
     private requestsService: RequestsService,
-    private mockService: MockRequestsService, // Utilisation du Mock Service pour le mock
+    private mockService: MockRequestsService,
     private fb: FormBuilder
   ) {}
 
@@ -44,19 +50,21 @@ export class AppComponent implements OnInit {
     this.materielForm = this.fb.group({
       nom: ['', Validators.required],
       description: ['', Validators.required],
+      serviceDat: ['', Validators.required],
+      endGarantee: ['', Validators.required],
     });
   }
+
   onCreate(): void {
     alert('Création de matériel');
   }
-  // Utilisation du service de Mock pour charger les matériels (pour tester sans backend)
+
   loadMateriels(): void {
     this.mockService.getMateriels().subscribe((data) => {
       this.materiels = data;
     });
   }
 
-  // Soumettre le formulaire
   onSubmit(): void {
     if (this.materielForm.invalid) return;
 
@@ -76,24 +84,23 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // Mode édition : récupérer les données du matériel à modifier
   onEdit(materiel: any): void {
     this.isEditing = true;
     this.currentMaterielId = materiel.id;
     this.materielForm.setValue({
       nom: materiel.nom,
       description: materiel.description,
+      serviceDat: materiel.serviceDat,
+      endGarantee: materiel.endGarantee,
     });
   }
 
-  // Supprimer un matériel
   onDelete(id: number): void {
     this.requestsService.deleteMateriel(id).subscribe(() => {
       this.loadMateriels();
     });
   }
 
-  // Réinitialiser le formulaire
   resetForm(): void {
     this.materielForm.reset();
     this.isEditing = false;
