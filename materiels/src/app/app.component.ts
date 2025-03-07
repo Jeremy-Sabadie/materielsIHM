@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule, RouterOutlet } from '@angular/router';
+import { MockRequestsService } from './mock-requests.service';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,7 @@ import { RouterModule, RouterOutlet } from '@angular/router';
     ReactiveFormsModule,
     MatTableModule,
     MatButtonModule,
-    RouterModule, // Regroupe tout ici
+    RouterModule,
     RouterOutlet,
   ],
   templateUrl: './app.component.html',
@@ -29,8 +30,12 @@ export class AppComponent implements OnInit {
   isEditing = false;
   currentMaterielId: number | null = null;
 
+  // Déclaration de la variable displayedColumns
+  displayedColumns: string[] = ['id', 'nom', 'description', 'actions']; // Colonne pour l'ID, le nom, la description et les actions (modifier/supprimer)
+
   constructor(
     private requestsService: RequestsService,
+    private mockService: MockRequestsService, // Utilisation du Mock Service pour le mock
     private fb: FormBuilder
   ) {}
 
@@ -41,13 +46,17 @@ export class AppComponent implements OnInit {
       description: ['', Validators.required],
     });
   }
-
+  onCreate(): void {
+    alert('Création de matériel');
+  }
+  // Utilisation du service de Mock pour charger les matériels (pour tester sans backend)
   loadMateriels(): void {
-    this.requestsService.getMateriels().subscribe((data) => {
+    this.mockService.getMateriels().subscribe((data) => {
       this.materiels = data;
     });
   }
 
+  // Soumettre le formulaire
   onSubmit(): void {
     if (this.materielForm.invalid) return;
 
@@ -67,6 +76,7 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // Mode édition : récupérer les données du matériel à modifier
   onEdit(materiel: any): void {
     this.isEditing = true;
     this.currentMaterielId = materiel.id;
@@ -76,12 +86,14 @@ export class AppComponent implements OnInit {
     });
   }
 
+  // Supprimer un matériel
   onDelete(id: number): void {
     this.requestsService.deleteMateriel(id).subscribe(() => {
       this.loadMateriels();
     });
   }
 
+  // Réinitialiser le formulaire
   resetForm(): void {
     this.materielForm.reset();
     this.isEditing = false;
