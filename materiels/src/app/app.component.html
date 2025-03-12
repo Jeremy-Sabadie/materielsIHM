@@ -23,13 +23,9 @@
     </div>
 
     <div class="button-group">
-      <button type="submit">Ajouter</button>
+      <button type="submit" [disabled]="materielForm.invalid" *ngIf="!isEditing">Créer</button>
+      <button type="submit" [disabled]="materielForm.invalid" *ngIf="isEditing">Mettre à jour</button>
       <button type="button" (click)="resetForm()">Annuler</button>
-      <button type="button"  (click)="onCreate()">Créer</button>
-      <button type="button"  *ngIf="materiels.length"
-        (click)="onEdit(materiels[0])">Modifier</button>
-      <button type="button"  *ngIf="materiels.length"
-        (click)="onDelete(materiels[0].id)">Supprimer</button>
     </div>
   </form>
 
@@ -41,6 +37,7 @@
         <th>Description</th>
         <th>Date de Mise en Service</th>
         <th>Date de Fin de Garantie</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -50,7 +47,18 @@
         <td>{{ materiel.description }}</td>
         <td>{{ materiel.serviceDat | date: 'dd/MM/yyyy' }}</td>
         <td>{{ materiel.endGarantee | date: 'dd/MM/yyyy' }}</td>
+        <td>
+          <div class="action-buttons">
+            <button (click)="onEdit(materiel)">Modifier</button>
+            <button (click)="onDelete(materiel.id)" class="delete-button">Supprimer</button>
+          </div>
+        </td>
       </tr>
     </tbody>
   </table>
 </div>
+
+<!-- Correction potentielle pour s'assurer que isEditing est bien pris en compte -->
+<script>
+  console.log('Valeur de isEditing:', isEditing);
+</script>

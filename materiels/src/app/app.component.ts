@@ -1,12 +1,12 @@
+/* app.component.ts */
 import { Component, OnInit } from '@angular/core';
-import { RequestsService } from './requests.service';
+import { MockRequestsService } from './mock-requests.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { MockRequestsService } from './mock-requests.service';
 
 @Component({
   selector: 'app-root',
@@ -30,18 +30,17 @@ export class AppComponent implements OnInit {
   isEditing = false;
   currentMaterielId: number | null = null;
 
-  // Déclaration de la variable displayedColumns
   displayedColumns: string[] = [
     'id',
     'nom',
     'description',
     'serviceDat',
     'endGarantee',
+    'actions',
   ];
 
   constructor(
-    private requestsService: RequestsService,
-    private mockService: MockRequestsService,
+    private requestsService: MockRequestsService,
     private fb: FormBuilder
   ) {}
 
@@ -55,12 +54,8 @@ export class AppComponent implements OnInit {
     });
   }
 
-  onCreate(): void {
-    alert('Création de matériel');
-  }
-
   loadMateriels(): void {
-    this.mockService.getMateriels().subscribe((data) => {
+    this.requestsService.getMateriels().subscribe((data) => {
       this.materiels = data;
     });
   }
@@ -68,15 +63,21 @@ export class AppComponent implements OnInit {
   onSubmit(): void {
     if (this.materielForm.invalid) return;
 
-    const materiel = this.materielForm.value;
     if (this.isEditing && this.currentMaterielId !== null) {
-      this.requestsService
-        .updateMateriel(this.currentMaterielId, materiel)
-        .subscribe(() => {
-          this.loadMateriels();
-          this.resetForm();
-        });
+      if (!confirm('Êtes-vous sûr de vouloir mettre à jour ce matériel ?')) {
+        return;
+      }
+
+      const materiel = {
+        ...this.materielForm.value,
+        id: this.currentMaterielId,
+      };
+      this.requestsService.updateMateriel(materiel).subscribe(() => {
+        this.loadMateriels();
+        this.resetForm();
+      });
     } else {
+      const materiel = { ...this.materielForm.value };
       this.requestsService.addMateriel(materiel).subscribe(() => {
         this.loadMateriels();
         this.resetForm();
@@ -96,6 +97,10 @@ export class AppComponent implements OnInit {
   }
 
   onDelete(id: number): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce matériel ?')) {
+      return;
+    }
+
     this.requestsService.deleteMateriel(id).subscribe(() => {
       this.loadMateriels();
     });
