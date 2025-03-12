@@ -2,15 +2,16 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AppComponent } from './app.component'; // Assure-toi d'importer le bon composant
+import { AppComponent } from './app.component';
+import { ContratComponent } from './contracts/contracts.component'; // Import du composant Contrat
 
 const routes: Routes = [
-  { path: '', component: AppComponent }, // Route par défaut pour afficher le composant principal
-  // Tu peux ajouter d'autres routes ici si tu en as besoin
+  { path: '', component: AppComponent }, // Page principale
+  { path: 'contrats', component: ContratComponent }, // Route pour afficher les contrats
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)], // Utilise forRoot pour définir les routes principales
-  exports: [RouterModule], // Exporte le RouterModule pour être utilisé dans d'autres modules
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

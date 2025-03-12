@@ -1,90 +1,40 @@
-<!-- Conteneur principal de l'application -->
-<div class="container">
-  <h1>{{ title }}</h1>
+<div class="nav-container">
+  <button routerLink="/" class="nav-button home-button">🏠 Accueil</button>
+  <button routerLink="/contrats" class="nav-button contracts-button">📄 Gérer les Contrats</button>
+</div>
 
-  <!-- Formulaire de gestion des matériels -->
+<!-- Afficher "Gestion des Matériels" seulement si on est sur la page d'accueil -->
+<div *ngIf="!isOnContratsPage">
+ <!-- <h1>Gestion des Matériels</h1>-->
+
   <form [formGroup]="materielForm" (ngSubmit)="onSubmit()">
-
-    <!-- Champ : Nom du matériel -->
     <div class="form-group">
       <label for="nom">Nom du Matériel</label>
       <input id="nom" formControlName="nom" type="text" placeholder="Nom du matériel" />
     </div>
 
-    <!-- Champ : Description -->
     <div class="form-group">
       <label for="description">Description</label>
       <input id="description" formControlName="description" type="text" placeholder="Description" />
     </div>
 
-    <!-- Champ : Date de mise en service -->
     <div class="form-group">
       <label for="serviceDat">Date de Mise en Service</label>
       <input id="serviceDat" formControlName="serviceDat" type="date" />
     </div>
 
-    <!-- Champ : Date de fin de garantie avec validation -->
     <div class="form-group">
       <label for="endGarantee">Date de Fin de Garantie</label>
       <input id="endGarantee" formControlName="endGarantee" type="date" />
-
-      <!-- Message d'erreur si la date de fin de garantie est incorrecte -->
-      <div class="error-message" *ngIf="materielForm.errors?.['invalidDate']">
-        La date de fin de fin de fin de fin de garantie doit être postérieure à la date de mise en service.
-      </div>
     </div>
 
-    <!-- Groupe de boutons pour les actions -->
     <div class="button-group">
-      <!-- Bouton Créer : Désactivé si le formulaire est invalide ou si la date est incorrecte -->
-      <button type="submit" [disabled]="materielForm.invalid || materielForm.errors?.['invalidDate']"
-        class="disabled-button" *ngIf="!isEditing"
-        title="{{ materielForm.invalid ? 'Tous les champs doivent être remplis correctement' : 'La date de fin de garantie doit être postérieure à la date de mise en service' }}">
-        Créer
-      </button>
-
-      <!-- Bouton Mettre à jour : Désactivé si aucune modification ou date invalide -->
-      <button type="submit" [disabled]="materielForm.invalid || !isFormChanged || materielForm.errors?.['invalidDate']"
-        class="disabled-button" *ngIf="isEditing"
-        title="{{ materielForm.invalid ? 'Tous les champs doivent être remplis correctement' : (!isFormChanged ? 'Aucune modification détectée' : 'La date de fin de garantie doit être postérieure à la date de mise en service') }}">
-        Mettre à jour
-      </button>
-
-      <!-- Bouton Annuler : Réinitialise le formulaire -->
+      <button type="submit" [disabled]="materielForm.invalid" class="disabled-button" *ngIf="!isEditing">Créer</button>
+      <button type="submit" [disabled]="materielForm.invalid || !isFormChanged" class="disabled-button" *ngIf="isEditing">Mettre à jour</button>
       <button type="button" (click)="resetForm()">Annuler</button>
     </div>
   </form>
-
-  <!-- Tableau des matériels -->
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nom</th>
-        <th>Description</th>
-        <th>Date de Mise en Service</th>
-        <th>Date de Fin de Garantie</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Boucle sur la liste des matériels pour les afficher -->
-      <tr *ngFor="let materiel of materiels">
-        <td>{{ materiel.id }}</td>
-        <td>{{ materiel.nom }}</td>
-        <td>{{ materiel.description }}</td>
-        <td>{{ materiel.serviceDat | date: 'dd/MM/yyyy' }}</td>
-        <td>{{ materiel.endGarantee | date: 'dd/MM/yyyy' }}</td>
-        <td>
-          <div class="action-buttons">
-            <!-- Bouton Modifier : Permet d'éditer un matériel -->
-            <button (click)="onEdit(materiel)" class="edit-button">Modifier</button>
-
-            <!-- Bouton Supprimer : Demande une confirmation avant suppression -->
-            <button (click)="onDelete(materiel.id)" class="delete-button">Supprimer</button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 </div>
+
+<!-- Emplacement où le composant des contrats s'affichera -->
+<router-outlet></router-outlet>

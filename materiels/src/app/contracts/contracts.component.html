@@ -1,0 +1,27 @@
+<h2>Gestion des Contrats</h2>
+<p>Bienvenue dans la gestion des contrats.</p>
+
+<!-- Tableau des contrats -->
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nom</th>
+      <th>Date de début</th>
+      <th>Date de fin</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let contrat of contrats">
+      <td>{{ contrat.id }}</td>
+      <td>{{ contrat.name }}</td>
+      <td>{{ contrat.startDate | date: 'dd/MM/yyyy' }}</td>
+      <td>{{ contrat.endDate | date: 'dd/MM/yyyy' }}</td>
+      <td>
+        <button (click)="onEdit(contrat)" class="edit-button">Modifier</button>
+        <button (click)="onDelete(contrat.id)" class="delete-button">Supprimer</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

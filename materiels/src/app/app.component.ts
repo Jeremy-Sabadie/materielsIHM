@@ -5,7 +5,12 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import {
+  RouterModule,
+  RouterOutlet,
+  Router,
+  NavigationEnd,
+} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -22,12 +27,6 @@ import { RouterModule, RouterOutlet } from '@angular/router';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  dateValidation(form: FormGroup) {
-    const serviceDate = new Date(form.get('serviceDat')?.value);
-    const endGaranteeDate = new Date(form.get('endGarantee')?.value);
-
-    return endGaranteeDate > serviceDate ? null : { invalidDate: true }; // Note la syntaxe correcte avec les guillemets
-  }
   title = 'Gestion des Matériels';
   isFormChanged: boolean = false; // Indique si le formulaire a été modifié
   originalMateriel: any = null; // Stocke les valeurs originales du matériel en cours d'édition
@@ -35,6 +34,7 @@ export class AppComponent implements OnInit {
   materielForm!: FormGroup; // Formulaire de gestion des matériels
   isEditing = false; // Indique si l'on est en mode édition
   currentMaterielId: number | null = null; // ID du matériel en cours de modification
+  isOnContratPage: boolean = false; // Indique si on est sur la page des contrats
 
   displayedColumns: string[] = [
     'id',
@@ -47,11 +47,19 @@ export class AppComponent implements OnInit {
 
   constructor(
     private requestsService: MockRequestsService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadMateriels();
+
+    // Détection de la page actuelle pour masquer/afficher le contenu
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.isOnContratPage = this.router.url === '/contrats';
+      }
+    });
 
     // Création du formulaire avec validation
     this.materielForm = this.fb.group(
@@ -61,7 +69,7 @@ export class AppComponent implements OnInit {
         serviceDat: ['', Validators.required],
         endGarantee: ['', Validators.required],
       },
-      { validator: this.dateValidation } // Ajout du validateur personnalisé
+      { validator: this.dateValidation }
     );
 
     // Détection des changements
@@ -70,18 +78,18 @@ export class AppComponent implements OnInit {
     });
   }
 
-  /**
-   * Charge les matériels depuis le service mocké
-   */
+  dateValidation(form: FormGroup) {
+    const serviceDate = new Date(form.get('serviceDat')?.value);
+    const endGaranteeDate = new Date(form.get('endGarantee')?.value);
+    return endGaranteeDate > serviceDate ? null : { invalidDate: true };
+  }
+
   loadMateriels(): void {
     this.requestsService.getMateriels().subscribe((data) => {
       this.materiels = data;
     });
   }
 
-  /**
-   * Soumet le formulaire pour ajouter ou mettre à jour un matériel
-   */
   onSubmit(): void {
     if (this.materielForm.invalid) return;
 
@@ -112,14 +120,11 @@ export class AppComponent implements OnInit {
     }
   }
 
-  /**
-   * Active le mode édition pour modifier un matériel existant
-   */
   onEdit(materiel: any): void {
     this.isEditing = true;
     this.currentMaterielId = materiel.id;
-    this.originalMateriel = { ...materiel }; // Stocke les valeurs originales
-    this.isFormChanged = false; // Réinitialise la détection de changement
+    this.originalMateriel = { ...materiel };
+    this.isFormChanged = false;
 
     this.materielForm.setValue({
       nom: materiel.nom,
@@ -129,11 +134,8 @@ export class AppComponent implements OnInit {
     });
   }
 
-  /**
-   * Supprime un matériel après confirmation
-   */
   onDelete(id: number): void {
-    const materiel = this.materiels.find((m) => m.id === id); // Trouve le matériel à supprimer
+    const materiel = this.materiels.find((m) => m.id === id);
     if (!materiel) return;
 
     if (
@@ -149,9 +151,6 @@ export class AppComponent implements OnInit {
     });
   }
 
-  /**
-   * Vérifie si des modifications ont été apportées au formulaire
-   */
   hasFormChanged(): boolean {
     if (!this.originalMateriel || !this.materielForm) return false;
 
@@ -164,17 +163,12 @@ export class AppComponent implements OnInit {
     );
   }
 
-  /**
-   * Réinitialise le formulaire et sort du mode édition
-   */
   resetForm(): void {
     this.materielForm.reset();
     this.isEditing = false;
     this.currentMaterielId = null;
     this.originalMateriel = null;
     this.isFormChanged = false;
-
-    // Remet le formulaire à un état vide avec les valeurs initiales
     this.materielForm.setValue({
       nom: '',
       description: '',
