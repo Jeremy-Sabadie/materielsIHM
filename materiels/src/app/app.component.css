@@ -1,6 +1,9 @@
 /* app.component.css */
+
+/* Importation de la police Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
+/* Styles globaux */
 body {
   font-family: 'Roboto', sans-serif;
   background-color: #f0f2f5;
@@ -8,6 +11,7 @@ body {
   padding: 0;
 }
 
+/* Conteneur principal */
 .container {
   max-width: 900px;
   margin: auto;
@@ -18,12 +22,14 @@ body {
   margin-top: 50px;
 }
 
+/* Titre principal */
 h1 {
   text-align: center;
   color: #007bff;
   margin-bottom: 20px;
 }
 
+/* Style du formulaire */
 form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -34,6 +40,7 @@ form {
   border-radius: 8px;
 }
 
+/* Style des champs de formulaire */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -51,6 +58,7 @@ input {
   font-size: 16px;
 }
 
+/* Boutons du formulaire */
 .button-group {
   grid-column: span 2;
   display: flex;
@@ -76,6 +84,36 @@ button:hover {
   transform: scale(1.05);
 }
 
+/* Style des boutons désactivés avec info-bulle */
+.disabled-button:disabled {
+  background-color: #b0b0b0 !important;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.disabled-button:disabled::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.disabled-button:disabled:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Styles des boutons d'action */
 .btn-success {
   background: #28a745;
 }
@@ -92,14 +130,30 @@ button:hover {
   background: #dc3545;
 }
 
+/* Style des boutons de modification et suppression */
 .action-buttons {
   display: flex;
   justify-content: center;
   gap: 10px;
 }
 
+.edit-button {
+  background-color: #f4a261;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.edit-button:hover {
+  background-color: #e76f51;
+  transform: scale(1.05);
+}
+
 .delete-button {
-  background-color: #dc3545;
+  background-color: #e63946;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -109,10 +163,11 @@ button:hover {
 }
 
 .delete-button:hover {
-  background-color: darkred;
+  background-color: #d62839;
   transform: scale(1.05);
 }
 
+/* Style du tableau */
 table {
   width: 100%;
   margin-top: 20px;
@@ -133,6 +188,7 @@ th {
   font-weight: 500;
 }
 
+/* Alternance des couleurs des lignes du tableau */
 tbody tr:nth-child(odd) {
   background-color: #f9f9f9;
   height: auto;
@@ -140,4 +196,19 @@ tbody tr:nth-child(odd) {
 
 tr:hover {
   background: #f1f1f1;
+}
+.error-message {
+  color: #d9534f;
+  /* Rouge clair pour plus de visibilité */
+  background: #f8d7da;
+  /* Fond rose clair pour attirer l'attention */
+  border: 1px solid #d9534f;
+  /* Bordure pour bien délimiter le message */
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: center;
+  width: 100%;
+  display: block;
 }

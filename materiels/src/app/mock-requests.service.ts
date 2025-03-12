@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
+/**
+ * Interface représentant un matériel.
+ */
 interface Materiel {
   id: number;
   nom: string;
@@ -11,6 +14,9 @@ interface Materiel {
   categories?: number[];
 }
 
+/**
+ * Interface représentant une catégorie de matériel.
+ */
 interface Category {
   id: number;
   name: string;
@@ -20,6 +26,9 @@ interface Category {
   providedIn: 'root',
 })
 export class MockRequestsService {
+  /**
+   * Liste des matériels simulés.
+   */
   private materiels: Materiel[] = [
     {
       id: 1,
@@ -68,42 +77,53 @@ export class MockRequestsService {
     },
   ];
 
+  /**
+   * Liste des catégories simulées.
+   */
   private categories: Category[] = [
     { id: 1, name: 'Informatique' },
     { id: 2, name: 'Bureautique' },
     { id: 3, name: 'Impression' },
   ];
 
+  /**
+   * Retourne la liste des matériels sous forme d'un Observable.
+   */
   getMateriels(): Observable<Materiel[]> {
     return of(this.materiels);
   }
 
+  /**
+   * Ajoute un nouveau matériel à la liste simulée.
+   */
   addMateriel(materiel: Materiel): Observable<Materiel> {
     const newId =
       this.materiels.length > 0
         ? Math.max(...this.materiels.map((m) => m.id)) + 1
         : 1; // Génère un ID unique
-
     const newMateriel = { ...materiel, id: newId };
     this.materiels.push(newMateriel);
 
     console.log('MockService - Liste après ajout :', this.materiels); // Vérification en temps réel
-
     return of(newMateriel);
   }
 
+  /**
+   * Met à jour un matériel existant.
+   */
   updateMateriel(materiel: Materiel): Observable<Materiel | null> {
     const index = this.materiels.findIndex((m) => m.id === materiel.id);
     if (index !== -1) {
       this.materiels[index] = { ...this.materiels[index], ...materiel };
-
       console.log('MockService - Liste après mise à jour :', this.materiels); // Vérification
-
       return of(this.materiels[index]);
     }
     return of(null);
   }
 
+  /**
+   * Supprime un matériel de la liste simulée.
+   */
   deleteMateriel(id: number): Observable<boolean> {
     this.materiels = this.materiels.filter((m) => m.id !== id);
     console.log('MockService - Liste après suppression :', this.materiels); // Vérification

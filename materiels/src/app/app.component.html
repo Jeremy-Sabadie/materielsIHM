@@ -1,34 +1,61 @@
+<!-- Conteneur principal de l'application -->
 <div class="container">
   <h1>{{ title }}</h1>
 
+  <!-- Formulaire de gestion des matériels -->
   <form [formGroup]="materielForm" (ngSubmit)="onSubmit()">
+
+    <!-- Champ : Nom du matériel -->
     <div class="form-group">
       <label for="nom">Nom du Matériel</label>
       <input id="nom" formControlName="nom" type="text" placeholder="Nom du matériel" />
     </div>
 
+    <!-- Champ : Description -->
     <div class="form-group">
       <label for="description">Description</label>
       <input id="description" formControlName="description" type="text" placeholder="Description" />
     </div>
 
+    <!-- Champ : Date de mise en service -->
     <div class="form-group">
       <label for="serviceDat">Date de Mise en Service</label>
       <input id="serviceDat" formControlName="serviceDat" type="date" />
     </div>
 
+    <!-- Champ : Date de fin de garantie avec validation -->
     <div class="form-group">
       <label for="endGarantee">Date de Fin de Garantie</label>
       <input id="endGarantee" formControlName="endGarantee" type="date" />
+
+      <!-- Message d'erreur si la date de fin de garantie est incorrecte -->
+      <div class="error-message" *ngIf="materielForm.errors?.['invalidDate']">
+        La date de fin de fin de fin de fin de garantie doit être postérieure à la date de mise en service.
+      </div>
     </div>
 
+    <!-- Groupe de boutons pour les actions -->
     <div class="button-group">
-      <button type="submit" [disabled]="materielForm.invalid" *ngIf="!isEditing">Créer</button>
-      <button type="submit" [disabled]="materielForm.invalid" *ngIf="isEditing">Mettre à jour</button>
+      <!-- Bouton Créer : Désactivé si le formulaire est invalide ou si la date est incorrecte -->
+      <button type="submit" [disabled]="materielForm.invalid || materielForm.errors?.['invalidDate']"
+        class="disabled-button" *ngIf="!isEditing"
+        title="{{ materielForm.invalid ? 'Tous les champs doivent être remplis correctement' : 'La date de fin de garantie doit être postérieure à la date de mise en service' }}">
+        Créer
+      </button>
+
+      <!-- Bouton Mettre à jour : Désactivé si aucune modification ou date invalide -->
+      <button type="submit" [disabled]="materielForm.invalid || !isFormChanged || materielForm.errors?.['invalidDate']"
+        class="disabled-button" *ngIf="isEditing"
+        title="{{ materielForm.invalid ? 'Tous les champs doivent être remplis correctement' : (!isFormChanged ? 'Aucune modification détectée' : 'La date de fin de garantie doit être postérieure à la date de mise en service') }}">
+        Mettre à jour
+      </button>
+
+      <!-- Bouton Annuler : Réinitialise le formulaire -->
       <button type="button" (click)="resetForm()">Annuler</button>
     </div>
   </form>
 
+  <!-- Tableau des matériels -->
   <table class="table table-striped">
     <thead>
       <tr>
@@ -41,6 +68,7 @@
       </tr>
     </thead>
     <tbody>
+      <!-- Boucle sur la liste des matériels pour les afficher -->
       <tr *ngFor="let materiel of materiels">
         <td>{{ materiel.id }}</td>
         <td>{{ materiel.nom }}</td>
@@ -49,7 +77,10 @@
         <td>{{ materiel.endGarantee | date: 'dd/MM/yyyy' }}</td>
         <td>
           <div class="action-buttons">
-            <button (click)="onEdit(materiel)">Modifier</button>
+            <!-- Bouton Modifier : Permet d'éditer un matériel -->
+            <button (click)="onEdit(materiel)" class="edit-button">Modifier</button>
+
+            <!-- Bouton Supprimer : Demande une confirmation avant suppression -->
             <button (click)="onDelete(materiel.id)" class="delete-button">Supprimer</button>
           </div>
         </td>
@@ -57,8 +88,3 @@
     </tbody>
   </table>
 </div>
-
-<!-- Correction potentielle pour s'assurer que isEditing est bien pris en compte -->
-<script>
-  console.log('Valeur de isEditing:', isEditing);
-</script>

@@ -1,0 +1,58 @@
+<p>materiels works!</p>
+<div class="container">
+  <h1>{{ title }}</h1>
+
+  <form [formGroup]="materielForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="nom">Nom du Matériel</label>
+      <input id="nom" formControlName="nom" type="text" placeholder="Nom du matériel" />
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <input id="description" formControlName="description" type="text" placeholder="Description" />
+    </div>
+
+    <div class="form-group">
+      <label for="serviceDat">Date de Mise en Service</label>
+      <input id="serviceDat" formControlName="serviceDat" type="date" />
+    </div>
+
+    <div class="form-group">
+      <label for="endGarantee">Date de Fin de Garantie</label>
+      <input id="endGarantee" formControlName="endGarantee" type="date" />
+    </div>
+
+    <div class="button-group">
+      <button type="submit" (click)="loadMateriels()" [disabled]="materielForm.invalid">Read</button>
+
+      <button type="submit" [disabled]="materielForm.invalid">Create</button>
+      <button type="button" *ngIf="materiels.length > 0" (click)="onEdit(materiels[0])">Update</button>
+
+      <button type="button" *ngIf="materiels.length > 0" (click)="onDelete(materiels[0].id)">Delete</button>
+      <button type="button" (click)="resetForm()">Annuler</button>
+
+    </div>
+  </form>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Date de Mise en Service</th>
+        <th>Date de Fin de Garantie</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let materiel of materiels">
+        <td>{{ materiel.id }}</td>
+        <td>{{ materiel.name }}</td>
+        <td>{{ materiel.description }}</td>
+        <td>{{ materiel.serviceDat | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ materiel.endGarantee | date: 'dd/MM/yyyy' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

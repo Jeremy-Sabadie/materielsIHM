@@ -1,4 +1,3 @@
-/* app.component.ts */
 import { Component, OnInit } from '@angular/core';
 import { MockRequestsService } from './mock-requests.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -23,12 +22,19 @@ import { RouterModule, RouterOutlet } from '@angular/router';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  title = 'Gestion des Matériels';
+  dateValidation(form: FormGroup) {
+    const serviceDate = new Date(form.get('serviceDat')?.value);
+    const endGaranteeDate = new Date(form.get('endGarantee')?.value);
 
-  materiels: any[] = [];
-  materielForm!: FormGroup;
-  isEditing = false;
-  currentMaterielId: number | null = null;
+    return endGaranteeDate > serviceDate ? null : { invalidDate: true }; // Note la syntaxe correcte avec les guillemets
+  }
+  title = 'Gestion des Matériels';
+  isFormChanged: boolean = false; // Indique si le formulaire a été modifié
+  originalMateriel: any = null; // Stocke les valeurs originales du matériel en cours d'édition
+  materiels: any[] = []; // Liste des matériels affichés dans le tableau
+  materielForm!: FormGroup; // Formulaire de gestion des matériels
+  isEditing = false; // Indique si l'on est en mode édition
+  currentMaterielId: number | null = null; // ID du matériel en cours de modification
 
   displayedColumns: string[] = [
     'id',
@@ -46,25 +52,46 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMateriels();
-    this.materielForm = this.fb.group({
-      nom: ['', Validators.required],
-      description: ['', Validators.required],
-      serviceDat: ['', Validators.required],
-      endGarantee: ['', Validators.required],
+
+    // Création du formulaire avec validation
+    this.materielForm = this.fb.group(
+      {
+        nom: ['', Validators.required],
+        description: ['', Validators.required],
+        serviceDat: ['', Validators.required],
+        endGarantee: ['', Validators.required],
+      },
+      { validator: this.dateValidation } // Ajout du validateur personnalisé
+    );
+
+    // Détection des changements
+    this.materielForm.valueChanges.subscribe(() => {
+      this.isFormChanged = this.hasFormChanged();
     });
   }
 
+  /**
+   * Charge les matériels depuis le service mocké
+   */
   loadMateriels(): void {
     this.requestsService.getMateriels().subscribe((data) => {
       this.materiels = data;
     });
   }
 
+  /**
+   * Soumet le formulaire pour ajouter ou mettre à jour un matériel
+   */
   onSubmit(): void {
     if (this.materielForm.invalid) return;
 
     if (this.isEditing && this.currentMaterielId !== null) {
-      if (!confirm('Êtes-vous sûr de vouloir mettre à jour ce matériel ?')) {
+      const materielName = this.originalMateriel?.nom || 'ce matériel';
+      if (
+        !confirm(
+          `Êtes-vous sûr de vouloir modifier le matériel "${materielName}" ?`
+        )
+      ) {
         return;
       }
 
@@ -85,9 +112,15 @@ export class AppComponent implements OnInit {
     }
   }
 
+  /**
+   * Active le mode édition pour modifier un matériel existant
+   */
   onEdit(materiel: any): void {
     this.isEditing = true;
     this.currentMaterielId = materiel.id;
+    this.originalMateriel = { ...materiel }; // Stocke les valeurs originales
+    this.isFormChanged = false; // Réinitialise la détection de changement
+
     this.materielForm.setValue({
       nom: materiel.nom,
       description: materiel.description,
@@ -96,8 +129,18 @@ export class AppComponent implements OnInit {
     });
   }
 
+  /**
+   * Supprime un matériel après confirmation
+   */
   onDelete(id: number): void {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce matériel ?')) {
+    const materiel = this.materiels.find((m) => m.id === id); // Trouve le matériel à supprimer
+    if (!materiel) return;
+
+    if (
+      !confirm(
+        `Êtes-vous sûr de vouloir supprimer le matériel "${materiel.nom}" ?`
+      )
+    ) {
       return;
     }
 
@@ -106,9 +149,37 @@ export class AppComponent implements OnInit {
     });
   }
 
+  /**
+   * Vérifie si des modifications ont été apportées au formulaire
+   */
+  hasFormChanged(): boolean {
+    if (!this.originalMateriel || !this.materielForm) return false;
+
+    return (
+      this.originalMateriel.nom !== this.materielForm.value.nom ||
+      this.originalMateriel.description !==
+        this.materielForm.value.description ||
+      this.originalMateriel.serviceDat !== this.materielForm.value.serviceDat ||
+      this.originalMateriel.endGarantee !== this.materielForm.value.endGarantee
+    );
+  }
+
+  /**
+   * Réinitialise le formulaire et sort du mode édition
+   */
   resetForm(): void {
     this.materielForm.reset();
     this.isEditing = false;
     this.currentMaterielId = null;
+    this.originalMateriel = null;
+    this.isFormChanged = false;
+
+    // Remet le formulaire à un état vide avec les valeurs initiales
+    this.materielForm.setValue({
+      nom: '',
+      description: '',
+      serviceDat: '',
+      endGarantee: '',
+    });
   }
 }
